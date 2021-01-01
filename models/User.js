@@ -78,10 +78,10 @@ userSchema.methods.generateToken=function(cb_fun){
     
 }
 
-userSchema.statics.findByToken=function(toekn, cb_fun){
+userSchema.statics.findByToken=function(token, cb_fun){
     var user=this
     //복호화(decode)
-    jwt.verify(toekn, 'secretToken', function(err, decoded){
+    jwt.verify(token, 'secretToken', function(err, decoded){
         //user._id로 user찾아 db의 token과 비교
         user.findOne({"_id":decoded, "token":token}, function(err, user){
             if(err) return cb_fun(err)

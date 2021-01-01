@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
 })
 
  //회원가입 시 필요 정보 client에서 가져와 디비에 삽입
-app.post('api/users/register', (req, res)=>{
+app.post('/api/users/register', (req, res)=>{
   //req.body에는 User에 필요한 정보가 들어가있음(body-parser 덕분)
   const user=new User(req.body)
   user.save((err, userInfo)=>{//mongoDB에 의한 메소드. 정보를 user모델에 저장
@@ -42,7 +42,7 @@ app.post('api/users/register', (req, res)=>{
   })
 })
 
-app.post('api/users/login', (req, res)=>{
+app.post('/api/users/login', (req, res)=>{
 
   //db안에서 요청된 이메일 있는지 찾기
   User.findOne({email:req.body.email}, (err, user)=>{
@@ -70,7 +70,7 @@ app.post('api/users/login', (req, res)=>{
 })
 
 //api/users/auth로 request 받은 후 callback fun하기 전에 auth실행->auth:middleware
-app.post('api/users/auth', auth, (req, res)=>{
+app.post('/api/users/auth', auth, (req, res)=>{
   //middleware 통과->authentication is true
   res.status(200).json({
     _id:req.user._id,
@@ -83,6 +83,15 @@ app.post('api/users/auth', auth, (req, res)=>{
     image:req.user.image
 
   })
+})
+
+app.post('/api/users/logout', auth, (req, res)=>{
+  User.findOneAndUpdate({_id:req.user._id},
+    {token:""}, //token삭제
+    (err, user)=>{
+      if(err) return res.json({success:false, err})
+      return res.status(200).send({success:true})
+    })
 })
 
 
