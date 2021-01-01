@@ -3,6 +3,9 @@ const express = require('express')
 const app = express()
 const port = 5000
 const bodyParser=require('body-parser')//받아온 정보를 서버에서 분석 가능
+const cookieParser=require('cookie-parser')
+
+app.use(cookieParser())
 
 //비밀정보 가져오기
 const config=require('./config/key')
@@ -16,6 +19,7 @@ app.use(bodyParser.json())
 const{User}=require("./models/User")
 
 const mongoose=require('mongoose')
+const { urlencoded } = require('body-parser')
 //비밀정보부분(id, passwd)
 mongoose.connect(config.mongoURI,{
     useNewUrlParser:true, useUnifiedTopology:true, useCreateIndex:true, useFindAndModify:false
@@ -33,6 +37,33 @@ app.post('/register', (req, res)=>{
   user.save((err, userInfo)=>{//mongoDB에 의한 메소드. 정보를 user모델에 저장
     if(err) return res.json({success:false, err})//json형식으로 err 전달
     return res.status(200).json({success:true})
+  })
+})
+
+app.post('/login', (req, res)=>{
+
+  //db안에서 요청된 이메일 있는지 찾기
+  User.findOne({email:req.body.email}, (err, user)=>{
+    if(!user){
+      return res.json({loginSuccess:false,
+      message :"이메일에 해당하는 유저가 없습니다."
+      })
+    }
+    //이메일이 db에 있으면 비밀번호가 맞는지 확인
+    user.comparePassword(req.body.password, (err, isMatch)=>{
+      if(!isMatch)
+        return res.json({loginSuccess:false, message:"비밀번호가 틀렸습니다."})
+
+      //비밀번호 맞다면 그 유저를 위한 토큰 생성
+      user.generateToken((err, user)=>{
+        if(err) return res.status(400).send(err)
+        
+        //쿠키에 x_auth란 항목으로 token 저장
+        res.cookie("x_auth", user.token)
+        .status(200)
+        .json({loginSuccess:true, userId:user._id})
+      })
+    })
   })
 })
 
