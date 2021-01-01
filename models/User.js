@@ -78,6 +78,25 @@ userSchema.methods.generateToken=function(cb_fun){
     
 }
 
+userSchema.statics.findByToken=function(toekn, cb_fun){
+    var user=this
+    //복호화(decode)
+    jwt.verify(toekn, 'secretToken', function(err, decoded){
+        //user._id로 user찾아 db의 token과 비교
+        user.findOne({"_id":decoded, "token":token}, function(err, user){
+            if(err) return cb_fun(err)
+            cb_fun(null, user)
+        })
+    })
+}
+
 const User=mongoose.model('user', userSchema)//user:모델의 이름
 
 module.exports={User}//다른 곳에서도 User 모델 사용가능
+
+/*
+methods vs statics
+Use method on individual documents if you want to manipulate the individual document like adding tokens etc. 
+Use the statics approach if you want query the whole collection.
+(https://stackoverflow.com/questions/39708841/what-is-the-use-of-mongoose-methods-and-statics)
+*/
