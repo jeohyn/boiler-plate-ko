@@ -94,6 +94,12 @@ app.post('/api/users/logout', auth, (req, res)=>{
     })
 })
 
+//from clien(LandingPage.js)
+app.post('/api/hello', (req, res)=>{
+  //front로 뿌려주기(LandingPage.js로 hello!!!전송->LandingPage.js에서는 이 res를 받고 then 메소드 실행)
+  res.send("hello!!!")
+})
+
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
