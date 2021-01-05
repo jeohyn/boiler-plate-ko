@@ -5,6 +5,7 @@ import {loginUser} from '../../../_action/user_action'
 
 function LoginPage(props) {
     const dispatch=useDispatch()
+
     //email을 위한 state 생성
     const[Email, setEmail]=useState("")
     //passsword를 위한 state 생성
@@ -27,7 +28,7 @@ function LoginPage(props) {
             password:Password
         }
 
-        //action
+        //action 전송
         dispatch(loginUser(body))
         .then(response=>{
             if(response.payload.loginSuccess){
@@ -47,8 +48,9 @@ function LoginPage(props) {
             <form style={{display:'flex', flexDirection:'column'}}
                 onSubmit={onSubmitHandler}
             >
-            <label>Email</label>
+                <label>Email</label>
                 <input type="email" value={Email} onChange={onEmailHandler}/>
+                
                 <label>Password</label>
                 <input type="password" value={Password} onChange={onPasswordHandler}/>
 
