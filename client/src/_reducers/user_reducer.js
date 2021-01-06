@@ -1,5 +1,5 @@
 import{
-    LOGIN_USER, REGISTER_USER
+    LOGIN_USER, REGISTER_USER, AUTH_USER
 }from "../_action/types"
 
 export default function (prev_state={}, action){
@@ -10,6 +10,10 @@ export default function (prev_state={}, action){
 
         case REGISTER_USER:
             return{...prev_state, register: action.payload}
+            break;
+        
+        case AUTH_USER:
+            return{...prev_state, userData: action.payload}
             break;
     
         default:
